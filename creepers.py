@@ -138,7 +138,7 @@ def run_game():
 		'bluecreep.png',
 		'pinkcreep.png',
 		'graycreep.png']
-	N_CREEPS = 20
+	N_CREEPS = 1000
 
 	pygame.init()
 	screen = pygame.display.set_mode(
