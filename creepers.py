@@ -138,8 +138,11 @@ def run_game():
 		'bluecreep.png',
 		'pinkcreep.png',
 		'graycreep.png']
-	N_CREEPS = 1000
-
+	N_CREEPS = 100
+	N_BLUE = int(N_CREEPS * .6)
+	N_GREY = int(N_CREEPS * .2)
+	N_PINK = int(N_CREEPS * .2)
+	
 	pygame.init()
 	screen = pygame.display.set_mode(
 				(SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -147,15 +150,33 @@ def run_game():
 
 	# Create N_CREEPS random creeps.
 	creeps = []
-	for i in range(N_CREEPS):
+	
+	for n in range(N_BLUE):
 		creeps.append(Creep(screen,
-							choice(CREEP_FILENAMES),
+							CREEP_FILENAMES[0],
 							(	randint(0, SCREEN_WIDTH),
 								randint(0, SCREEN_HEIGHT)),
 							(	choice([-1, 1]),
 								choice([-1, 1])),
 							0.1))
-
+	
+	for n in range(N_GREY):
+		creeps.append(Creep(screen,
+							CREEP_FILENAMES[1],
+							(	randint(0, SCREEN_WIDTH),
+								randint(0, SCREEN_HEIGHT)),
+							(	choice([-1, 1]),
+								choice([-1, 1])),
+							0.1))
+							
+	for n in range(N_PINK):
+		creeps.append(Creep(screen,
+							CREEP_FILENAMES[2],
+							(	randint(0, SCREEN_WIDTH),
+								randint(0, SCREEN_HEIGHT)),
+							(	choice([-1, 1]),
+								choice([-1, 1])),
+							0.1))
 	# The main loop
 	#
 	while True:
@@ -175,6 +196,18 @@ def run_game():
 			creep.update(time_passed)
 			creep.blitme()
 			
+		myfont = pygame.font.SysFont("monospace", 15)
+		label = myfont.render(("Blue:" + str(N_BLUE)), 1, (255,255,0))
+		screen.blit(label, (10, 10))
+		
+		myfont = pygame.font.SysFont("monospace", 15)
+		label = myfont.render(("Grey:" + str(N_GREY)), 1, (255,255,0))
+		screen.blit(label, (10, 20))
+		
+		myfont = pygame.font.SysFont("monospace", 15)
+		label = myfont.render(("Pink:" + str(N_PINK)), 1, (255,255,0))
+		screen.blit(label, (10, 30))
+		
 		pygame.display.flip()
 
 	
