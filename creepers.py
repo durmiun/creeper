@@ -38,10 +38,9 @@ class Creep(Sprite):
 		Sprite.__init__(self)
 
 		self.screen = screen
-		self.speed = speed
-
+		self.current_speed = speed
 		# base_image holds the original image, positioned to
-		# angle 0.
+		# angle 0
 		# image will be rotated.
 		#
 		self.base_image = pygame.image.load(img_filename).convert_alpha()
@@ -75,8 +74,8 @@ class Creep(Sprite):
 		# the magnitude of the displacement)
 		#
 		displacement = vec2d(
-			self.direction.x * self.speed * time_passed,
-			self.direction.y * self.speed * time_passed)
+			self.direction.x * self.current_speed * time_passed,
+			self.direction.y * self.current_speed * time_passed)
 			
 		self.pos += displacement
 		
@@ -120,16 +119,29 @@ class Creep(Sprite):
 	#------------------ PRIVATE PARTS ------------------#
     
 	_counter = 0
-    
+	_timer = 0
+	_stopped = False
+	
 	def _change_direction(self, time_passed):
 		""" Turn by 45 degrees in a random direction once per
 			0.4 to 0.5 seconds.
 		"""
 		self._counter += time_passed
+		self._timer += time_passed
+		if self._timer > randint(2000, 3000):
+			if((randint(0,300) > 250) and self._stopped == False):
+				self.current_speed = 0
+				self._timer = 0
+				self._stopped = True
 		if self._counter > randint(400, 500):
 			self.direction.rotate(45 * randint(-1, 1))
 			self._counter = 0
-			
+		if((self._timer > 1000) and self._stopped == True):
+			self.current_speed = 0.1
+			self._timer = 0
+			self._stopped = False
+		
+		
 def run_game():
 	# Game parameters
 	SCREEN_WIDTH, SCREEN_HEIGHT = 400, 400
@@ -138,7 +150,7 @@ def run_game():
 		'bluecreep.png',
 		'pinkcreep.png',
 		'graycreep.png']
-	N_CREEPS = 100
+	N_CREEPS = 10
 	N_BLUE = int(N_CREEPS * .6)
 	N_GREY = int(N_CREEPS * .2)
 	N_PINK = int(N_CREEPS * .2)
@@ -182,7 +194,7 @@ def run_game():
 	while True:
 		# Limit frame speed to 50 FPS
 		#
-		time_passed = clock.tick(50)
+		time_passed = clock.tick()
 		
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -196,17 +208,21 @@ def run_game():
 			creep.update(time_passed)
 			creep.blitme()
 			
+		FPS = clock.get_fps()
+
 		myfont = pygame.font.SysFont("monospace", 15)
-		label = myfont.render(("Blue:" + str(N_BLUE)), 1, (255,255,0))
+
+		label = myfont.render(("Blue: " + str(N_BLUE)), 1, (255,255,0))
 		screen.blit(label, (10, 10))
 		
-		myfont = pygame.font.SysFont("monospace", 15)
-		label = myfont.render(("Grey:" + str(N_GREY)), 1, (255,255,0))
-		screen.blit(label, (10, 20))
+		label = myfont.render(("Grey: " + str(N_GREY)), 1, (255,255,0))
+		screen.blit(label, (10, 25))
 		
-		myfont = pygame.font.SysFont("monospace", 15)
-		label = myfont.render(("Pink:" + str(N_PINK)), 1, (255,255,0))
-		screen.blit(label, (10, 30))
+		label = myfont.render(("Pink: " + str(N_PINK)), 1, (255,255,0))
+		screen.blit(label, (10, 40))
+		
+		label = myfont.render(("FPS: " + str(FPS)), 1, (255, 255, 0))
+		screen.blit(label, (10, 55))
 		
 		pygame.display.flip()
 
